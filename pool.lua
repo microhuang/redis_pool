@@ -179,6 +179,7 @@ function _M.new(self, config)
         _timeout = config.timeout or 100000,
         _size = config.size or 10,
         _auth = config.auth,
+        _db = config.db,
     }
 
     return setmetatable(t, { __index = _M })
@@ -190,6 +191,7 @@ function _M.run(self)
     local timeout = self._timeout
     local size = self._size
     local auth = self._auth
+    local db = self._db
 
     local red = redis:new()
     local ok, err = red:connect(ip, port)
@@ -207,6 +209,13 @@ function _M.run(self)
             if not ok then
                 return exit(err)
             end
+        end
+    end
+    
+    if db then
+        local ok, err = red:select(db)
+        if not ok then
+            return exit(err)
         end
     end
 
